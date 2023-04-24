@@ -4,7 +4,8 @@
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            Gerenciador_de_Medicamentos gerenciador_De_Medicamentos = new Gerenciador_de_Medicamentos();
+            gerenciador_De_Medicamentos.MenuPrincipal();
         }
     }
 }
