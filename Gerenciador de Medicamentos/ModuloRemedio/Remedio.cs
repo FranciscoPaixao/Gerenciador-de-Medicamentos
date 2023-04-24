@@ -7,21 +7,19 @@ namespace Gerenciador_de_Medicamentos.ModuloRemedio
 {
     public class Remedio
     {
-        private string nome { get; set;}
-        private string descricao{ get; set;}
-        private string quantidade{ get; set;}
+        public int id { get; set;}
+        public string nome { get; set;}
+        public string descricao{ get; set;}
+        public int quantidade{ get; set;}
+        public int idFornecedor { get; set; }
 
-        public Remedio()
+        public Remedio(int id = -1, string nome = "", string descricao = "", int quantidade = -1, int idFornecedor = -1)
         {
-            this.nome = "";
-            this.descricao = "";
-            this.quantidade = "";
-        }
-        public Remedio(string nome, string descricao, string quantidade)
-        {
+            this.id = id;
             this.nome = nome;
             this.descricao = descricao;
             this.quantidade = quantidade;
+            this.idFornecedor = idFornecedor;
         }
     }
 }
