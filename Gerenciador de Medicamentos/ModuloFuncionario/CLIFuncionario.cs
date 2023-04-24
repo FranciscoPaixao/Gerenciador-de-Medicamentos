@@ -154,7 +154,6 @@ namespace Gerenciador_de_Medicamentos.ModuloFuncionario
                 Console.WriteLine("Data de nascimento: " + funcionario.dataNascimento);
                 Console.WriteLine("==================================");
             }
-            MenuFuncionario();
         }
     }
 }

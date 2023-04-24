@@ -7,14 +7,14 @@ namespace Gerenciador_de_Medicamentos.ModuloPedidoFornecedor
 {
     public class RepositorioPedidoFornecedor
     {
-        private List<Pedido> listaPedidos;
+        private List<PedidoFornecedor> listaPedidos;
         private int proximoId;
         public RepositorioPedidoFornecedor()
         {
-            this.listaPedidos = new List<Pedido>();
+            this.listaPedidos = new List<PedidoFornecedor>();
             this.proximoId = 0;
         }
-        public bool Inserir(Pedido pedido)
+        public bool Inserir(PedidoFornecedor pedido)
         {
             if(checarPedidoAnteriorIgual(pedido))
             {
@@ -25,17 +25,17 @@ namespace Gerenciador_de_Medicamentos.ModuloPedidoFornecedor
             proximoId++;
             return true;
         }
-        public Pedido Obter(int id)
+        public PedidoFornecedor Obter(int id)
         {
             return listaPedidos.Find(p => p.id == id);
         }
-        public List<Pedido> ObterTodos()
+        public List<PedidoFornecedor> ObterTodos()
         {
             return listaPedidos;
         }
-        public bool checarPedidoAnteriorIgual(Pedido pedido)
+        public bool checarPedidoAnteriorIgual(PedidoFornecedor pedido)
         {
-            Pedido pedidoAnterior = listaPedidos.Find(p => p.id == proximoId);
+            PedidoFornecedor pedidoAnterior = listaPedidos.Find(p => p.id == proximoId);
             if(pedidoAnterior != null)
             {
                 if(pedidoAnterior.idRemedio == pedido.idRemedio && pedidoAnterior.idFornecedor == pedido.idFornecedor && pedidoAnterior.quantidade == pedido.quantidade)

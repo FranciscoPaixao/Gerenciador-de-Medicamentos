@@ -213,7 +213,19 @@ namespace Gerenciador_de_Medicamentos.ModuloPaciente
             List<Paciente> pacientes = repositorioPaciente.ObterTodos().Cast<Paciente>().ToList();
             foreach (Paciente paciente in pacientes)
             {
-                Console.WriteLine(paciente.nome);
+                Console.WriteLine("Nome: " + paciente.nome);
+                Console.WriteLine("CPF: " + paciente.cpf);
+                Console.WriteLine("Nome da Mãe: " + paciente.nomeMae);
+                Console.WriteLine("Cartão SUS: " + paciente.cartaoSUS);
+                Console.WriteLine("Data de Nascimento: " + paciente.dataNascimento);
+                Console.WriteLine("Endereço: " + paciente.endereco);
+                Console.WriteLine("Telefone: " + paciente.telefone);
+                Console.WriteLine("Email: " + paciente.email);
+                Console.WriteLine("Sexo: " + paciente.sexo);
+                Console.WriteLine("Peso: " + paciente.peso);
+                Console.WriteLine("Altura: " + paciente.altura);
+                Console.WriteLine("Tipo Sanguíneo: " + paciente.tipoSanguineo);
+                Console.WriteLine("====================================");
             }
         }
     }

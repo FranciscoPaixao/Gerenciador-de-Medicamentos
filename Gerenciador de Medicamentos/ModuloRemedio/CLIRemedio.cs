@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Gerenciador_de_Medicamentos.ModuloFornecedor;
+using Gerenciador_de_Medicamentos.ModuloPedidoFornecedor;
 
 namespace Gerenciador_de_Medicamentos.ModuloRemedio
 {
@@ -10,10 +11,12 @@ namespace Gerenciador_de_Medicamentos.ModuloRemedio
     {
         RepositorioRemedio repositorioRemedio;
         RepositorioFornecedor repositorioFornecedor;
-        public CLIRemedio(RepositorioRemedio repositorioRemedio, RepositorioFornecedor repositorioFornecedor)
+        RepositorioPedidoFornecedor repositorioPedidoFornecedor;
+        public CLIRemedio(RepositorioRemedio repositorioRemedio, RepositorioFornecedor repositorioFornecedor, RepositorioPedidoFornecedor repositorioPedidoFornecedor)
         {
             this.repositorioRemedio = repositorioRemedio;
             this.repositorioFornecedor = repositorioFornecedor;
+            this.repositorioPedidoFornecedor = repositorioPedidoFornecedor;
         }
         public void MenuRemedio()
         {
@@ -63,6 +66,7 @@ namespace Gerenciador_de_Medicamentos.ModuloRemedio
             if (repositorioRemedio.Inserir(remedio))
             {
                 Console.WriteLine("Remédio cadastrado com sucesso!");
+                repositorioPedidoFornecedor.Inserir(new PedidoFornecedor(idRemedio: repositorioRemedio.Obter(remedio.nome).id, idFornecedor: remedio.idFornecedor, quantidade: remedio.quantidade, data: DateTime.Now));
             }
             else
             {

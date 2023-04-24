@@ -18,9 +18,8 @@ namespace Gerenciador_de_Medicamentos.ModuloRemedio
         {
             if (checarRemedioRepetido(remedio))
             {
-                if (remedio.quantidade > 0)
+                if (AtualizarQuantidade(remedio.id, remedio.quantidade))
                 {
-                    listaRemedios.Find(p => p.nome == remedio.nome).quantidade += remedio.quantidade;
                     return true;
                 }
                 return false;
@@ -32,30 +31,53 @@ namespace Gerenciador_de_Medicamentos.ModuloRemedio
         }
         public bool Editar(Remedio remedio)
         {
-            int index = listaRemedios.FindIndex(p => p.id == remedio.id);
-            if (index >= 0 || listaRemedios[index].id == remedio.id || checarRemedioRepetido(remedio))
+            int indice = listaRemedios.FindIndex(p => p.id == remedio.id);
+            if (indice >= 0 || listaRemedios[indice].id == remedio.id || checarRemedioRepetido(remedio))
             {
                 return false;
             }
-            listaRemedios[index] = remedio;
+            listaRemedios[indice] = remedio;
             return true;
+        }
+        public bool AtualizarQuantidade(int id, int quantidade)
+        {
+            int indice = listaRemedios.FindIndex(p => p.id == id);
+            if (indice >= 0)
+            {
+                listaRemedios[indice].quantidade = listaRemedios[indice].quantidade + quantidade;
+                return true;
+            }
+            return false;
+        }
+        public bool RetirarRemedio(int id, int quantidade)
+        {
+            int indice = listaRemedios.FindIndex(p => p.id == id);
+            if (indice >= 0)
+            {
+                if (listaRemedios[indice].quantidade >= quantidade)
+                {
+                    listaRemedios[indice].quantidade = listaRemedios[indice].quantidade - quantidade;
+                    return true;
+                }
+            }
+            return false;
         }
         public bool Excluir(string nome)
         {
-            int index = listaRemedios.FindIndex(p => p.nome == nome);
-            if (index >= 0)
+            int indice = listaRemedios.FindIndex(p => p.nome == nome);
+            if (indice >= 0)
             {
-                listaRemedios.RemoveAt(index);
+                listaRemedios.RemoveAt(indice);
                 return true;
             }
             return false;
         }
         public bool Excluir(int id)
         {
-            int index = listaRemedios.FindIndex(p => p.id == id);
-            if (index >= 0)
+            int indice = listaRemedios.FindIndex(p => p.id == id);
+            if (indice >= 0)
             {
-                listaRemedios.RemoveAt(index);
+                listaRemedios.RemoveAt(indice);
                 return true;
             }
             return false;
@@ -79,8 +101,8 @@ namespace Gerenciador_de_Medicamentos.ModuloRemedio
         }
         public bool checarRemedioRepetido(Remedio remedio)
         {
-            int index = listaRemedios.FindIndex(p => p.nome == remedio.nome);
-            if (index >= 0)
+            int indice = listaRemedios.FindIndex(p => p.nome == remedio.nome);
+            if (indice >= 0)
             {
                 return true;
             }

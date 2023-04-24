@@ -13,7 +13,7 @@ namespace Gerenciador_de_Medicamentos.ModuloRemedio
         public int quantidade{ get; set;}
         public int idFornecedor { get; set; }
 
-        public Remedio(int id = -1, string nome = "", string descricao = "", int quantidade = -1, int idFornecedor = -1)
+        public Remedio(int id = -1, string nome = "", string descricao = "", int quantidade = 0, int idFornecedor = -1)
         {
             this.id = id;
             this.nome = nome;
