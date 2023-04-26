@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Gerenciador_de_Medicamentos.Compartilhado;
 
 namespace Gerenciador_de_Medicamentos.ModuloRemedio
 {
-    public class Remedio
+    public class Remedio : EntidadeBase
     {
-        public int id { get; set;}
         public string nome { get; set;}
         public string descricao{ get; set;}
         public int quantidade{ get; set;}

@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using Gerenciador_de_Medicamentos.ModuloRemedio;
 using Gerenciador_de_Medicamentos.ModuloPaciente;
 using Gerenciador_de_Medicamentos.ModuloFuncionario;
-
+using Gerenciador_de_Medicamentos.Compartilhado;
 
 namespace Gerenciador_de_Medicamentos.ModuloAtendimento
 {
-    public class CLIAtendimento
+    public class CLIAtendimento : CLIBase
     {
         RepositorioAtendimento repositorioAtendimento;
         RepositorioPaciente repositorioPaciente;
@@ -23,14 +23,28 @@ namespace Gerenciador_de_Medicamentos.ModuloAtendimento
             this.repositorioFuncionario = repositorioFuncionario;
             this.repositorioRemedio = repositorioRemedio;
         }
-        public void MenuAtendimento()
+        public void MenuAtendimento(bool statusOpcao = false)
         {
-            Console.WriteLine("Menu Atendimento");
+            if (statusOpcao)
+            {
+                Console.Clear();
+                Console.WriteLine("Opção inválida");
+                statusOpcao = false;
+                Console.ReadKey();
+            }
+            else
+            {
+                Console.ReadKey();
+                Console.Clear();
+            }
+            Console.WriteLine("==== Menu de Atendimentos ====");
+            Console.WriteLine("Escolha uma opção:");
             Console.WriteLine("1 - Fazer novo atendimento");
-            Console.WriteLine("2 - Histórico de atendimentos");
+            Console.WriteLine("2 - Histórico de listaAtendimentos");
             Console.WriteLine("3 - Voltar ao menu principal");
             Console.WriteLine("4 - Sair do sistema");
             int opcao = int.Parse(Console.ReadLine());
+            Console.Clear();
             switch (opcao)
             {
                 case 1:
@@ -46,111 +60,42 @@ namespace Gerenciador_de_Medicamentos.ModuloAtendimento
                     Environment.Exit(0);
                     break;
                 default:
-                    Console.WriteLine("Opção inválida");
+                    statusOpcao = true;
                     break;
             }
-            MenuAtendimento();
+            MenuAtendimento(statusOpcao);
         }
         public void FazerAtendimento()
         {
-            Console.Clear();
             Console.WriteLine("Fazer novo atendimento");
             ListarFuncionarios("Selecione o funcionário que irá realizar o atendimento:");
-            Console.Write("ID do funcionário: ");
+            Console.Write("ID do funcionário: ", repositorioFuncionario.ObterTodos().Cast<Funcionario>().ToList());
             int idFuncionario = int.Parse(Console.ReadLine());
-            ListarPacientes("Selecione o paciente que irá receber o remedio:");
+            ListarPacientes("Selecione o paciente que irá receber o remedio:", repositorioPaciente.ObterTodos().Cast<Paciente>().ToList());
             Console.Write("ID do paciente: ");
             int idPaciente = int.Parse(Console.ReadLine());
-            ListarRemedios("Selecione o remedio que será retirado:");
+            ListarRemedios("Selecione o remedio que será retirado:", repositorioRemedio.ObterTodos().Cast<Remedio>().ToList());
             Console.Write("ID do remedio: ");
             int idRemedio = int.Parse(Console.ReadLine());
             Console.Write("Quantidade a ser retirada: ");
             int quantidade = int.Parse(Console.ReadLine());
-            if(quantidade > repositorioRemedio.Obter(idRemedio).quantidade)
+            Remedio auxRemedio = (Remedio)repositorioRemedio.ObterPorID(idRemedio);
+            if (quantidade > auxRemedio.quantidade)
             {
                 Console.WriteLine("Quantidade indisponível");
                 Console.ReadKey();
                 return;
             }
-            if(repositorioAtendimento.Inserir(new Atendimento(idFuncionario, idPaciente, idRemedio, quantidade)))
+            if (repositorioAtendimento.Inserir(new Atendimento(idFuncionario, idPaciente, idRemedio, quantidade)))
             {
                 repositorioRemedio.RetirarRemedio(idRemedio, quantidade);
                 Console.WriteLine("Atendimento realizado com sucesso");
-                Console.ReadKey();
             }
             else
             {
                 Console.WriteLine("Erro ao realizar atendimento");
-                Console.ReadKey();
             }
             MenuAtendimento();
-        }
-        public void ListarAtendimentos(string mensagem)
-        {
-            Console.WriteLine(mensagem);
-            List<Atendimento> atendimentos = repositorioAtendimento.ObterTodos();
-            foreach (Atendimento atendimento in atendimentos)
-            {
-                Remedio remedio = repositorioRemedio.Obter(atendimento.idRemedio);
-                Funcionario funcionario = repositorioFuncionario.Obter(atendimento.idFuncionario);
-                Paciente paciente = (Paciente)repositorioPaciente.Obter(atendimento.idPaciente);
-
-                Console.WriteLine("ID: " + atendimento.id);
-                Console.WriteLine("Data/Horário: " + atendimento.data);
-                Console.WriteLine("Paciente: " + paciente.nome);
-                Console.WriteLine("Funcionário: " + funcionario.nome);
-                Console.WriteLine("Remédio retirado: " + remedio.nome);
-                Console.WriteLine("Quantidade retirada: " + atendimento.quantidade);
-                Console.WriteLine("====================================");
-            }
-        }
-        public void ListarRemedios(string mensagem = "")
-        {
-            Console.WriteLine(mensagem);
-            List<Remedio> remedios = repositorioRemedio.ObterTodos();
-            foreach (Remedio remedio in remedios)
-            {
-                Console.WriteLine("Nome: " + remedio.nome);
-                Console.WriteLine("Descrição: " + remedio.descricao);
-                Console.WriteLine("Quantidade: " + remedio.quantidade);
-                Console.WriteLine();
-            }
-        }
-        public void ListarPacientes(string mensagem)
-        {
-            Console.WriteLine(mensagem);
-            List<Paciente> pacientes = repositorioPaciente.ObterTodos().Cast<Paciente>().ToList();
-            foreach (Paciente paciente in pacientes)
-            {
-                Console.WriteLine("Nome: " + paciente.nome);
-                Console.WriteLine("CPF: " + paciente.cpf);
-                Console.WriteLine("Nome da Mãe: " + paciente.nomeMae);
-                Console.WriteLine("Cartão SUS: " + paciente.cartaoSUS);
-                Console.WriteLine("Data de Nascimento: " + paciente.dataNascimento);
-                Console.WriteLine("Endereço: " + paciente.endereco);
-                Console.WriteLine("Telefone: " + paciente.telefone);
-                Console.WriteLine("Email: " + paciente.email);
-                Console.WriteLine("Sexo: " + paciente.sexo);
-                Console.WriteLine("Peso: " + paciente.peso);
-                Console.WriteLine("Altura: " + paciente.altura);
-                Console.WriteLine("Tipo Sanguíneo: " + paciente.tipoSanguineo);
-                Console.WriteLine("====================================");
-            }
-        }
-        public void ListarFuncionarios(string mensagem)
-        {
-            List<Funcionario> funcionarios = repositorioFuncionario.ObterTodos();
-            Console.WriteLine(mensagem);
-            foreach (Funcionario funcionario in funcionarios)
-            {
-                Console.WriteLine("ID: " + funcionario.id);
-                Console.WriteLine("Nome: " + funcionario.nome);
-                Console.WriteLine("CPF: " + funcionario.cpf);
-                Console.WriteLine("Nome da mãe: " + funcionario.nomeMae);
-                Console.WriteLine("Cargo: " + funcionario.Cargo);
-                Console.WriteLine("Data de nascimento: " + funcionario.dataNascimento);
-                Console.WriteLine("==================================");
-            }
         }
     }
 }

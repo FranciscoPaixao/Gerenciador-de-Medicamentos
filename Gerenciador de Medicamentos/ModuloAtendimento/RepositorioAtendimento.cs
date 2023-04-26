@@ -2,31 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Gerenciador_de_Medicamentos.Compartilhado;
 
 namespace Gerenciador_de_Medicamentos.ModuloAtendimento
 {
-    public class RepositorioAtendimento
+    public class RepositorioAtendimento : RepositorioBase
     {
-        private List<Atendimento> listaAtendimentos;
-        private int proximoId;
-        public RepositorioAtendimento()
+        public override bool verificarDadosInvalidos(EntidadeBase atendimento)
         {
-            listaAtendimentos = new List<Atendimento>();
-            proximoId = 0;
-        }
-        public bool Inserir(Atendimento atendimento)
-        {
-            if(atendimento.quantidade < 1 && atendimento.idRemedio < 0 && atendimento.idPaciente < 0 && atendimento.idFuncionario < 0)
-            {
-                return false;
-            }
-            atendimento.id = proximoId++;
-            listaAtendimentos.Add(atendimento);
-            return true;
-        }
-        public List<Atendimento> ObterTodos()
-        {
-            return listaAtendimentos;
+            Atendimento auxAtendimento = (Atendimento)atendimento;
+            return auxAtendimento.quantidade < 1 && auxAtendimento.idRemedio < 0 && auxAtendimento.idPaciente < 0 && auxAtendimento.idFuncionario < 0;
         }
     }
 }

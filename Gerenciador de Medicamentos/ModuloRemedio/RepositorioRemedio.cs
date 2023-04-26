@@ -2,111 +2,79 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Gerenciador_de_Medicamentos.Compartilhado;
 
 namespace Gerenciador_de_Medicamentos.ModuloRemedio
 {
-    public class RepositorioRemedio
+    public class RepositorioRemedio : RepositorioBase
     {
-        private List<Remedio> listaRemedios;
-        private int proximoId;
-        public RepositorioRemedio()
+        public override bool Inserir(EntidadeBase remedio)
         {
-            this.proximoId = 0;
-            this.listaRemedios = new List<Remedio>();
-        }
-        public bool Inserir(Remedio remedio)
-        {
-            if (checarRemedioRepetido(remedio))
+            if (checarRepetidoPorNome((Remedio)remedio))
             {
-                if (AtualizarQuantidade(remedio.id, remedio.quantidade))
+                if (AtualizarQuantidade(remedio.id, (remedio as Remedio).quantidade))
                 {
                     return true;
                 }
                 return false;
             }
             remedio.id = proximoId;
-            listaRemedios.Add(remedio);
+            listaRegistros.Add(remedio);
             proximoId++;
             return true;
         }
-        public bool Editar(Remedio remedio)
+        public override bool Editar(EntidadeBase remedio)
         {
-            int indice = listaRemedios.FindIndex(p => p.id == remedio.id);
-            if (indice >= 0 || listaRemedios[indice].id == remedio.id || checarRemedioRepetido(remedio))
+            int indice = listaRegistros.FindIndex(p => p.id == remedio.id);
+            if (indice >= 0 || listaRegistros[indice].id == remedio.id || checarRepetidoPorNome((Remedio)remedio))
             {
                 return false;
             }
-            listaRemedios[indice] = remedio;
+            listaRegistros[indice] = (Remedio)remedio;
             return true;
         }
         public bool AtualizarQuantidade(int id, int quantidade)
         {
-            int indice = listaRemedios.FindIndex(p => p.id == id);
+            int indice = listaRegistros.FindIndex(p => p.id == id);
             if (indice >= 0)
             {
-                listaRemedios[indice].quantidade = listaRemedios[indice].quantidade + quantidade;
+                Remedio remedio = (Remedio)listaRegistros[indice];
+                remedio.quantidade += quantidade;
                 return true;
             }
             return false;
         }
         public bool RetirarRemedio(int id, int quantidade)
         {
-            int indice = listaRemedios.FindIndex(p => p.id == id);
+            int indice = listaRegistros.FindIndex(p => p.id == id);
             if (indice >= 0)
             {
-                if (listaRemedios[indice].quantidade >= quantidade)
+                Remedio remedio = (Remedio)listaRegistros[indice];
+                if (remedio.quantidade >= quantidade)
                 {
-                    listaRemedios[indice].quantidade = listaRemedios[indice].quantidade - quantidade;
+                    remedio.quantidade += quantidade;
                     return true;
                 }
             }
             return false;
         }
-        public bool Excluir(string nome)
+        public bool ExcluirPorNome(string nome)
         {
-            int indice = listaRemedios.FindIndex(p => p.nome == nome);
+            int indice = listaRegistros.FindIndex(p => p.nome == nome);
             if (indice >= 0)
             {
-                listaRemedios.RemoveAt(indice);
+                listaRegistros.RemoveAt(indice);
                 return true;
             }
             return false;
         }
-        public bool Excluir(int id)
+        public Remedio ObterPorNome(string nome)
         {
-            int indice = listaRemedios.FindIndex(p => p.id == id);
-            if (indice >= 0)
-            {
-                listaRemedios.RemoveAt(indice);
-                return true;
-            }
-            return false;
-        }
-        public Remedio Obter(string nome)
-        {
-            return listaRemedios.Find(p => p.nome == nome);
-        }
-        public Remedio Obter(int id)
-        {
-            return listaRemedios.Find(p => p.id == id);
-        }
-        public List<Remedio> ObterTodos()
-        {
-            return listaRemedios;
+            return listaRegistros.Cast<Remedio>().ToList().Find(p => p.nome == nome);
         }
         public List<Remedio> ObterRemediosComBaixaQuantidade()
         {
-            //retornar os remedios com quantidade menor que 10
-            return listaRemedios.FindAll(p => p.quantidade < 10);
-        }
-        public bool checarRemedioRepetido(Remedio remedio)
-        {
-            int indice = listaRemedios.FindIndex(p => p.nome == remedio.nome);
-            if (indice >= 0)
-            {
-                return true;
-            }
-            return false;
+            return listaRegistros.Cast<Remedio>().ToList().FindAll(p => p.quantidade < 10);
         }
     }
 }

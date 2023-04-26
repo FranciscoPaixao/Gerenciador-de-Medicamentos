@@ -2,34 +2,51 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Gerenciador_de_Medicamentos.Compartilhado;
 
 namespace Gerenciador_de_Medicamentos.ModuloFornecedor
 {
-    public class CLIFornecedor
+    public class CLIFornecedor : CLIBase
     {
         RepositorioFornecedor repositorioFornecedor;
         public CLIFornecedor(RepositorioFornecedor repositorioFornecedor)
         {
             this.repositorioFornecedor = repositorioFornecedor;
         }
-        public void MenuFornecedor()
+        public void MenuFornecedor(bool statusOpcao = false)
         {
-            Console.WriteLine("1 - Cadastrar Fornecedor");
-            Console.WriteLine("2 - Listar Fornecedor");
-            Console.WriteLine("3 - Atualizar Fornecedor");
-            Console.WriteLine("4 - Deletar Fornecedor");
-            Console.WriteLine("5 - Buscar Fornecedor");
-            Console.WriteLine("6 - Voltar ao menu principal");
-            Console.Write("7 - Sair do sistema");
+            if (statusOpcao)
+            {
+                Console.Clear();
+                Console.WriteLine("Opção inválida");
+                statusOpcao = false;
+                Console.ReadKey();
+            }
+            else
+            {
+                Console.ReadKey();
+                Console.Clear();
+            }
+            Console.Clear();
+            Console.WriteLine("==== Menu Fornecedor ====");
+            Console.WriteLine("Escolha uma opção:");
+            Console.WriteLine(" 1 - Cadastrar Fornecedor");
+            Console.WriteLine(" 2 - Lista de Fornecedores");
+            Console.WriteLine(" 3 - Atualizar Fornecedor");
+            Console.WriteLine(" 4 - Deletar Fornecedor");
+            Console.WriteLine(" 5 - Buscar Fornecedor");
+            Console.WriteLine(" 6 - Voltar ao menu principal");
+            Console.WriteLine(" 7 - Sair do sistema");
             Console.Write("Opção: ");
             int opcao = int.Parse(Console.ReadLine());
+            Console.Clear();
             switch (opcao)
             {
                 case 1:
                     CadastrarFornecedor();
                     break;
                 case 2:
-                    ListaFornecedores("Lista de fornecedores cadastrados no sistema:");
+                    ListarFornecedores("Lista de fornecedores cadastrados no sistema:");
                     break;
                 case 3:
                     EditarFornecedor();
@@ -47,15 +64,13 @@ namespace Gerenciador_de_Medicamentos.ModuloFornecedor
                     Environment.Exit(0);
                     break;
                 default:
-                    Console.Clear();
-                    Console.WriteLine("Opção inválida");
+                    statusOpcao = true;
                     break;
             }
-            MenuFornecedor();
+            MenuFornecedor(statusOpcao);
         }
         public void CadastrarFornecedor()
         {
-            Console.Clear();
             Fornecedor fornecedor = new Fornecedor();
             Console.WriteLine("Digite o nome do fornecedor: ");
             fornecedor.nome = Console.ReadLine();
@@ -77,11 +92,10 @@ namespace Gerenciador_de_Medicamentos.ModuloFornecedor
         }
         public void ExcluirFornecedor()
         {
-            Console.Clear();
-            ListaFornecedores("Fornecedores disponíveis para exclusão: ");
+            ListarFornecedores("Fornecedores disponíveis para exclusão: ");
             Console.WriteLine("Digite o ID do fornecedor que deseja excluir: ");
             int id = int.Parse(Console.ReadLine());
-            if (repositorioFornecedor.Excluir(id))
+            if (repositorioFornecedor.ExcluirPorID(id))
             {
                 Console.WriteLine("Fornecedor excluído com sucesso!");
             }
@@ -93,11 +107,10 @@ namespace Gerenciador_de_Medicamentos.ModuloFornecedor
         }
         public void EditarFornecedor()
         {
-            Console.Clear();
-            ListaFornecedores("Fornecedores disponíveis para edição: ");
-            Console.WriteLine("Digite o ID do fornecedor que deseja editar: ");
+            ListarFornecedores("Fornecedores disponíveis para edição: ");
+            Console.Write("Digite o ID do fornecedor que deseja editar: ");
             int id = int.Parse(Console.ReadLine());
-            Fornecedor fornecedor = repositorioFornecedor.Obter(id);
+            Fornecedor fornecedor = (Fornecedor)repositorioFornecedor.ObterPorID(id);
             if (fornecedor != null)
             {
                 Console.WriteLine("Digite o nome do fornecedor: ");
@@ -125,18 +138,12 @@ namespace Gerenciador_de_Medicamentos.ModuloFornecedor
         }
         public void BuscarFornecedor()
         {
-            Console.Clear();
             Console.WriteLine("Digite o CNPJ do fornecedor que deseja buscar: ");
             string cnpj = Console.ReadLine();
-            Fornecedor fornecedor = repositorioFornecedor.Obter(cnpj);
+            Fornecedor fornecedor = repositorioFornecedor.ObterPorCNPJ(cnpj);
             if (fornecedor != null)
             {
-                Console.WriteLine("ID: " + fornecedor.id);
-                Console.WriteLine("Nome: " + fornecedor.nome);
-                Console.WriteLine("CNPJ: " + fornecedor.cnpj);
-                Console.WriteLine("Telefone: " + fornecedor.telefone);
-                Console.WriteLine("Email: " + fornecedor.email);
-                Console.WriteLine("==================================");
+                ExibirFornecedor(fornecedor);
             }
             else
             {
@@ -144,20 +151,5 @@ namespace Gerenciador_de_Medicamentos.ModuloFornecedor
             }
             MenuFornecedor();
         }
-        public void ListaFornecedores(string mensagem = "")
-        {
-            Console.WriteLine(mensagem);
-            List<Fornecedor> listaFornecedores = repositorioFornecedor.ObterTodos();
-            foreach (var fornecedor in listaFornecedores)
-            {
-                Console.WriteLine("ID: " + fornecedor.id);
-                Console.WriteLine("Nome: " + fornecedor.nome);
-                Console.WriteLine("CNPJ: " + fornecedor.cnpj);
-                Console.WriteLine("Telefone: " + fornecedor.telefone);
-                Console.WriteLine("Email: " + fornecedor.email);
-                Console.WriteLine("==================================");
-            }
-        }
-
     }
 }

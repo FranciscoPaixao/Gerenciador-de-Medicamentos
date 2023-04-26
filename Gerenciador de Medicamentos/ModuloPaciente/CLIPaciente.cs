@@ -6,7 +6,7 @@ using Gerenciador_de_Medicamentos.Compartilhado;
 
 namespace Gerenciador_de_Medicamentos.ModuloPaciente
 {
-    public class CLIPaciente
+    public class CLIPaciente : CLIBase
     {
         private RepositorioPaciente repositorioPaciente;
 
@@ -15,17 +15,30 @@ namespace Gerenciador_de_Medicamentos.ModuloPaciente
             this.repositorioPaciente = repositorioPaciente;
         }
 
-        public void MenuPaciente()
+        public void MenuPaciente(bool statusOpcao = false)
         {
-            Console.WriteLine("Menu de Pacientes");
-            Console.WriteLine("1 - Cadastrar Paciente");
-            Console.WriteLine("2 - Editar Paciente");
-            Console.WriteLine("3 - Excluir Paciente");
-            Console.WriteLine("4 - Listar Pacientes");
-            Console.WriteLine("5 - Buscar Paciente");
-            Console.WriteLine("6 - Voltar");
+            if (statusOpcao)
+            {
+                Console.Clear();
+                Console.WriteLine("Opção inválida");
+                statusOpcao = false;
+                Console.ReadKey();
+            }else{ 
+                Console.ReadKey();
+                Console.Clear();
+            }
+            Console.WriteLine("==== Menu de Pacientes ====");
+            Console.WriteLine("Escolha uma opção:");
+            Console.WriteLine(" 1 - Cadastrar Paciente");
+            Console.WriteLine(" 2 - Editar Paciente");
+            Console.WriteLine(" 3 - Excluir Paciente");
+            Console.WriteLine(" 4 - Listar Pacientes");
+            Console.WriteLine(" 5 - Buscar Paciente");
+            Console.WriteLine(" 6 - Voltar ao menu principal");
+            Console.WriteLine(" 7 - Sair do sistema");
             Console.Write("Opção: ");
             int opcao = int.Parse(Console.ReadLine());
+            Console.Clear();
             switch (opcao)
             {
                 case 1:
@@ -38,18 +51,22 @@ namespace Gerenciador_de_Medicamentos.ModuloPaciente
                     ExcluirPaciente();
                     break;
                 case 4:
-                    ListarPacientes("Lista de pacientes cadastrados no sistema:");
+                    ListarPacientes("Lista de listaPacientes cadastrados no sistema:");
                     break;
                 case 5:
                     BuscarPaciente();
                     break;
                 case 6:
+                    return;
+                    break;
+                case 7:
+                    Environment.Exit(0);
                     break;
                 default:
-                    Console.WriteLine("Opção inválida");
+                    statusOpcao = true;
                     break;
             }
-            MenuPaciente();
+            MenuPaciente(statusOpcao);
         }
         public void CadastrarPaciente()
         {
@@ -64,6 +81,7 @@ namespace Gerenciador_de_Medicamentos.ModuloPaciente
             paciente.cartaoSUS = Console.ReadLine();
             Console.Write("Data de Nascimento: ");
             paciente.dataNascimento = DateTime.Parse(Console.ReadLine());
+            /*
             Console.Write("Endereço: ");
             paciente.endereco = Console.ReadLine();
             Console.Write("Telefone: ");
@@ -78,6 +96,7 @@ namespace Gerenciador_de_Medicamentos.ModuloPaciente
             paciente.altura = double.Parse(Console.ReadLine());
             Console.Write("Tipo Sanguíneo: ");
             paciente.tipoSanguineo = Console.ReadLine();
+            */
 
             if (repositorioPaciente.Inserir(paciente))
             {
@@ -97,7 +116,8 @@ namespace Gerenciador_de_Medicamentos.ModuloPaciente
             do
             {
                 cpf = Console.ReadLine();
-                if (cpf.Length == 11){
+                if (cpf.Length == 11)
+                {
                     break;
                 }
                 else
@@ -105,7 +125,7 @@ namespace Gerenciador_de_Medicamentos.ModuloPaciente
                     Console.WriteLine("CPF inválido, digite novamente: ");
                 }
             } while (true);
-            Paciente paciente = (Paciente) repositorioPaciente.Obter(cpf);
+            Paciente paciente = (Paciente)repositorioPaciente.ObterPorCPF(cpf);
             if (paciente != null)
             {
                 Console.Write("Nome: ");
@@ -154,7 +174,8 @@ namespace Gerenciador_de_Medicamentos.ModuloPaciente
             do
             {
                 cpf = Console.ReadLine();
-                if (cpf.Length == 11){
+                if (cpf.Length == 11)
+                {
                     break;
                 }
                 else
@@ -162,7 +183,7 @@ namespace Gerenciador_de_Medicamentos.ModuloPaciente
                     Console.WriteLine("CPF inválido, digite novamente: ");
                 }
             } while (true);
-            if (repositorioPaciente.Excluir(cpf))
+            if (repositorioPaciente.ExcluirPorCPF(cpf))
             {
                 Console.WriteLine("Paciente excluído com sucesso");
             }
@@ -172,13 +193,15 @@ namespace Gerenciador_de_Medicamentos.ModuloPaciente
             }
             MenuPaciente();
         }
-        public void BuscarPaciente(){
+        public void BuscarPaciente()
+        {
             Console.Write("Digite o CPF do paciente que deseja buscar: ");
             string cpf;
             do
             {
                 cpf = Console.ReadLine();
-                if (cpf.Length == 11){
+                if (cpf.Length == 11)
+                {
                     break;
                 }
                 else
@@ -186,7 +209,7 @@ namespace Gerenciador_de_Medicamentos.ModuloPaciente
                     Console.WriteLine("CPF inválido, digite novamente: ");
                 }
             } while (true);
-            Paciente paciente = (Paciente) repositorioPaciente.Obter(cpf);
+            Paciente paciente = (Paciente)repositorioPaciente.ObterPorCPF(cpf);
             if (paciente != null)
             {
                 Console.WriteLine("Nome: " + paciente.nome);
@@ -206,27 +229,6 @@ namespace Gerenciador_de_Medicamentos.ModuloPaciente
                 Console.WriteLine("ERRO: Paciente não encontrado!");
             }
             MenuPaciente();
-        }
-        public void ListarPacientes(string mensagem)
-        {
-            Console.WriteLine(mensagem);
-            List<Paciente> pacientes = repositorioPaciente.ObterTodos().Cast<Paciente>().ToList();
-            foreach (Paciente paciente in pacientes)
-            {
-                Console.WriteLine("Nome: " + paciente.nome);
-                Console.WriteLine("CPF: " + paciente.cpf);
-                Console.WriteLine("Nome da Mãe: " + paciente.nomeMae);
-                Console.WriteLine("Cartão SUS: " + paciente.cartaoSUS);
-                Console.WriteLine("Data de Nascimento: " + paciente.dataNascimento);
-                Console.WriteLine("Endereço: " + paciente.endereco);
-                Console.WriteLine("Telefone: " + paciente.telefone);
-                Console.WriteLine("Email: " + paciente.email);
-                Console.WriteLine("Sexo: " + paciente.sexo);
-                Console.WriteLine("Peso: " + paciente.peso);
-                Console.WriteLine("Altura: " + paciente.altura);
-                Console.WriteLine("Tipo Sanguíneo: " + paciente.tipoSanguineo);
-                Console.WriteLine("====================================");
-            }
         }
     }
 }

@@ -2,40 +2,26 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Gerenciador_de_Medicamentos.Compartilhado;
 
 namespace Gerenciador_de_Medicamentos.ModuloPedidoFornecedor
 {
-    public class RepositorioPedidoFornecedor
+    public class RepositorioPedidoFornecedor : RepositorioBase
     {
-        private List<PedidoFornecedor> listaPedidos;
-        private int proximoId;
-        public RepositorioPedidoFornecedor()
+        public override bool Inserir(EntidadeBase pedido)
         {
-            this.listaPedidos = new List<PedidoFornecedor>();
-            this.proximoId = 0;
-        }
-        public bool Inserir(PedidoFornecedor pedido)
-        {
-            if(checarPedidoAnteriorIgual(pedido))
+            if(checarPedidoAnteriorIgual((PedidoFornecedor) pedido))
             {
                 return false;
             }
             pedido.id = proximoId;
-            listaPedidos.Add(pedido);
+            listaRegistros.Add(pedido);
             proximoId++;
             return true;
         }
-        public PedidoFornecedor Obter(int id)
-        {
-            return listaPedidos.Find(p => p.id == id);
-        }
-        public List<PedidoFornecedor> ObterTodos()
-        {
-            return listaPedidos;
-        }
         public bool checarPedidoAnteriorIgual(PedidoFornecedor pedido)
         {
-            PedidoFornecedor pedidoAnterior = listaPedidos.Find(p => p.id == proximoId);
+            PedidoFornecedor pedidoAnterior = listaRegistros.Cast<PedidoFornecedor>().ToList().Find(p => p.id == proximoId);
             if(pedidoAnterior != null)
             {
                 if(pedidoAnterior.idRemedio == pedido.idRemedio && pedidoAnterior.idFornecedor == pedido.idFornecedor && pedidoAnterior.quantidade == pedido.quantidade)

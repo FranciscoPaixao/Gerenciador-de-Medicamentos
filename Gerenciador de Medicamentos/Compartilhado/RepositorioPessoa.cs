@@ -5,61 +5,46 @@ using System.Threading.Tasks;
 
 namespace Gerenciador_de_Medicamentos.Compartilhado
 {
-    public class RepositorioPessoa
+    public class RepositorioPessoa : RepositorioBase
     {
-        protected List<Pessoa> listaPessoas;
-        protected int proximoId;
-        public RepositorioPessoa()
+        public override bool Inserir(EntidadeBase pessoa)
         {
-            proximoId = 0;
-            listaPessoas = new List<Pessoa>();
-        }
-        public bool Inserir(Pessoa paciente)
-        {
-            if (checarCPFRepetido(paciente))
+            if (checarCPFRepetido((Pessoa)pessoa))
             {
                 return false;
             }
-            paciente.id = proximoId;
-            listaPessoas.Add(paciente);
+            pessoa.id = proximoId;
+            listaRegistros.Add(pessoa);
             proximoId++;
             return true;
         }
-        public virtual bool Editar(Pessoa paciente)
+        public virtual bool Editar(Pessoa pessoa)
         {
-            int index = listaPessoas.FindIndex(p => p.id == paciente.id);
-            if (index >= 0 || listaPessoas[index].id == paciente.id || checarCPFRepetido(paciente))
+            int index = listaRegistros.FindIndex(p => p.id == pessoa.id);
+            if (index >= 0 || listaRegistros[index].id == pessoa.id || checarCPFRepetido(pessoa))
             {
                 return false;
             }
-            listaPessoas[index] = paciente;
+            listaRegistros[index] = pessoa;
             return true;
         }
-        public bool Excluir(string cpf)
+        public bool ExcluirPorCPF(string cpf)
         {
-            int index = listaPessoas.FindIndex(p => p.cpf == cpf);
+            int index = listaRegistros.FindIndex(p => (p as Pessoa).cpf == cpf);
             if (index >= 0)
             {
-                listaPessoas.RemoveAt(index);
+                listaRegistros.RemoveAt(index);
                 return true;
             }
             return false;
         }
-        public Pessoa Obter(string cpf)
+        public Pessoa ObterPorCPF(string cpf)
         {
-            return listaPessoas.Find(p => p.cpf == cpf);
+            return listaRegistros.Cast<Pessoa>().ToList().Find(p => p.cpf == cpf);
         }
-        public Pessoa Obter(int id)
+        public bool checarCPFRepetido(Pessoa pessoa)
         {
-            return listaPessoas.Find(p => p.id == id);
-        }
-        public List<Pessoa> ObterTodos()
-        {
-            return listaPessoas;
-        }
-        public bool checarCPFRepetido(Pessoa paciente)
-        {
-            int index = listaPessoas.FindIndex(p => p.cpf == paciente.cpf);
+            int index = listaRegistros.FindIndex(p => (p as Pessoa).cpf == pessoa.cpf);
             if (index >= 0)
             {
                 return true;

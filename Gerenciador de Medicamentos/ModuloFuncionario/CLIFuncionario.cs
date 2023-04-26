@@ -2,27 +2,41 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Gerenciador_de_Medicamentos.Compartilhado;
 
 namespace Gerenciador_de_Medicamentos.ModuloFuncionario
 {
-    public class CLIFuncionario
+    public class CLIFuncionario : CLIBase
     {
         private RepositorioFuncionario repositorioFuncionario;
         public CLIFuncionario(RepositorioFuncionario repositorioFuncionario)
         {
             this.repositorioFuncionario = repositorioFuncionario;
         }
-        public void MenuFuncionario()
+        public void MenuFuncionario(bool statusOpcao = false)
         {
-            Console.WriteLine("Menu de Funcionários");
-            Console.WriteLine("1 - Cadastrar Funcionário");
-            Console.WriteLine("2 - Editar Funcionário");
-            Console.WriteLine("3 - Excluir Funcionário");
-            Console.WriteLine("4 - Listar Funcionários");
-            Console.WriteLine("5 - Buscar Funcionário");
-            Console.WriteLine("6 - Voltar");
+            if (statusOpcao)
+            {
+                Console.Clear();
+                Console.WriteLine("Opção inválida");
+                statusOpcao = false;
+                Console.ReadKey();
+            }else{ 
+                Console.ReadKey();
+                Console.Clear();
+            }
+            Console.WriteLine("==== Menu de Funcionários ====");
+            Console.WriteLine("Escolha uma opção:");
+            Console.WriteLine(" 1 - Cadastrar Funcionário");
+            Console.WriteLine(" 2 - Editar Funcionário");
+            Console.WriteLine(" 3 - Excluir Funcionário");
+            Console.WriteLine(" 4 - Listar Funcionários");
+            Console.WriteLine(" 5 - Buscar Funcionário");
+            Console.WriteLine(" 6 - Voltar ao menu principal");
+            Console.WriteLine(" 7 - Sair do sistema");
             Console.Write("Opção: ");
             int opcao = int.Parse(Console.ReadLine());
+            Console.Clear();
             switch (opcao)
             {
                 case 1:
@@ -41,25 +55,31 @@ namespace Gerenciador_de_Medicamentos.ModuloFuncionario
                     BuscarFuncionario();
                     break;
                 case 6:
+                    return;
+                    break;
+                case 7:
+                    Environment.Exit(0);
                     break;
                 default:
-                    Console.WriteLine("Opção inválida");
+                    statusOpcao = true;
                     break;
             }
-            MenuFuncionario();
+            MenuFuncionario(statusOpcao);
         }
         public void CadastrarFuncionario()
         {
             Funcionario funcionario = new Funcionario();
-            Console.Write("Nome: ");
+            Console.WriteLine("=== Cadastro de Funcionário ===");
+            Console.WriteLine("Digite as informações do funcionário:");
+            Console.Write(" Nome: ");
             funcionario.nome = Console.ReadLine();
-            Console.Write("CPF: ");
+            Console.Write(" CPF: ");
             funcionario.cpf = Console.ReadLine();
-            Console.Write("Nome da mãe: ");
+            Console.Write(" Nome da mãe: ");
             funcionario.nomeMae = Console.ReadLine();
-            Console.Write("Cargo: ");
-            funcionario.Cargo = Console.ReadLine();
-            Console.Write("Data de nascimento: ");
+            Console.Write(" cargo: ");
+            funcionario.cargo = Console.ReadLine();
+            Console.Write(" Data de nascimento: ");
             funcionario.dataNascimento = DateTime.Parse(Console.ReadLine());
             if (repositorioFuncionario.Inserir(funcionario))
             {
@@ -76,18 +96,18 @@ namespace Gerenciador_de_Medicamentos.ModuloFuncionario
             ListarFuncionarios("Lista de funcionários cadastrados no sistema:");
             Console.Write("Digite o ID do funcionário que deseja editar: ");
             int id = int.Parse(Console.ReadLine());
-            Funcionario funcionario = repositorioFuncionario.Obter(id);
+            Funcionario funcionario = (Funcionario)repositorioFuncionario.ObterPorID(id);
             if (funcionario != null)
             {
-                Console.Write("Nome: ");
+                Console.Write(" Nome: ");
                 funcionario.nome = Console.ReadLine();
-                Console.Write("CPF: ");
+                Console.Write(" CPF: ");
                 funcionario.cpf = Console.ReadLine();
-                Console.Write("Nome da mãe: ");
+                Console.Write(" Nome da mãe: ");
                 funcionario.nomeMae = Console.ReadLine();
-                Console.Write("Cargo: ");
-                funcionario.Cargo = Console.ReadLine();
-                Console.Write("Data de nascimento: ");
+                Console.Write(" cargo: ");
+                funcionario.cargo = Console.ReadLine();
+                Console.Write(" Data de nascimento: ");
                 funcionario.dataNascimento = DateTime.Parse(Console.ReadLine());
                 if (repositorioFuncionario.Editar(funcionario))
                 {
@@ -109,7 +129,7 @@ namespace Gerenciador_de_Medicamentos.ModuloFuncionario
             ListarFuncionarios("Lista de funcionários cadastrados no sistema:");
             Console.Write("Digite o ID do funcionário que deseja excluir: ");
             int id = int.Parse(Console.ReadLine());
-            if(repositorioFuncionario.Excluir(id))
+            if (repositorioFuncionario.ExcluirPorID(id))
             {
                 Console.WriteLine("Funcionário excluído com sucesso!");
             }
@@ -123,15 +143,15 @@ namespace Gerenciador_de_Medicamentos.ModuloFuncionario
         {
             Console.Write("Digite o CPF do funcionário que deseja buscar: ");
             string cpf = Console.ReadLine();
-            Funcionario funcionario = repositorioFuncionario.Obter(cpf);
+            Funcionario funcionario = (Funcionario)repositorioFuncionario.ObterPorCPF(cpf);
             if (funcionario != null)
             {
-                Console.WriteLine("ID: " + funcionario.id);
-                Console.WriteLine("Nome: " + funcionario.nome);
-                Console.WriteLine("CPF: " + funcionario.cpf);
-                Console.WriteLine("Nome da mãe: " + funcionario.nomeMae);
-                Console.WriteLine("Cargo: " + funcionario.Cargo);
-                Console.WriteLine("Data de nascimento: " + funcionario.dataNascimento);
+                Console.WriteLine(" ID: " + funcionario.id);
+                Console.WriteLine(" Nome: " + funcionario.nome);
+                Console.WriteLine(" CPF: " + funcionario.cpf);
+                Console.WriteLine(" Nome da mãe: " + funcionario.nomeMae);
+                Console.WriteLine(" Cargo: " + funcionario.cargo);
+                Console.WriteLine(" Data de nascimento: " + funcionario.dataNascimento);
                 Console.WriteLine("==================================");
             }
             else
@@ -139,21 +159,6 @@ namespace Gerenciador_de_Medicamentos.ModuloFuncionario
                 Console.WriteLine("Funcionário não encontrado");
             }
             MenuFuncionario();
-        }
-        public void ListarFuncionarios(string mensagem)
-        {
-            List<Funcionario> funcionarios = repositorioFuncionario.ObterTodos();
-            Console.WriteLine(mensagem);
-            foreach (Funcionario funcionario in funcionarios)
-            {
-                Console.WriteLine("ID: " + funcionario.id);
-                Console.WriteLine("Nome: " + funcionario.nome);
-                Console.WriteLine("CPF: " + funcionario.cpf);
-                Console.WriteLine("Nome da mãe: " + funcionario.nomeMae);
-                Console.WriteLine("Cargo: " + funcionario.Cargo);
-                Console.WriteLine("Data de nascimento: " + funcionario.dataNascimento);
-                Console.WriteLine("==================================");
-            }
         }
     }
 }

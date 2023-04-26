@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Gerenciador_de_Medicamentos.ModuloRemedio;
 using Gerenciador_de_Medicamentos.ModuloFornecedor;
+using Gerenciador_de_Medicamentos.Compartilhado;
 
 namespace Gerenciador_de_Medicamentos.ModuloPedidoFornecedor
 {
-    public class CLIPedidoFornecedor
+    public class CLIPedidoFornecedor : CLIBase
     {
         RepositorioPedidoFornecedor repositorioPedidoFornecedor;
         RepositorioFornecedor repositorioFornecedor;
@@ -18,22 +19,37 @@ namespace Gerenciador_de_Medicamentos.ModuloPedidoFornecedor
             this.repositorioFornecedor = repositorioFornecedor;
             this.repositorioRemedio = repositorioRemedio;
         }
-        public void MenuPedidoFornecedor()
+        public void MenuPedidoFornecedor(bool statusOpcao = false)
         {
-            Console.WriteLine("Menu Pedido Fornecedor");
-            Console.WriteLine("1 - Fazer novo pedido de remédios");
-            Console.WriteLine("2 - Histórico de pedidos");
-            Console.WriteLine("3 - Remédios com baixo estoque");
-            Console.WriteLine("4 - Voltar ao menu principal");
-            Console.WriteLine("5 - Sair do sistema");
+            if (statusOpcao)
+            {
+                Console.Clear();
+                Console.WriteLine("Opção inválida");
+                statusOpcao = false;
+                Console.ReadKey();
+            }
+            else
+            {
+                Console.ReadKey();
+                Console.Clear();
+            }
+            Console.WriteLine("==== Menu de Pedidos a Fornecedores ====");
+            Console.WriteLine("Escolha uma opção:");
+            Console.WriteLine(" 1 - Fazer novo pedido de remédios");
+            Console.WriteLine(" 2 - Histórico de pedidos");
+            Console.WriteLine(" 3 - Remédios com baixo estoque");
+            Console.WriteLine(" 4 - Voltar ao menu principal");
+            Console.WriteLine(" 5 - Sair do sistema");
+            Console.Write("Opção: ");
             int opcao = int.Parse(Console.ReadLine());
+            Console.Clear();
             switch (opcao)
             {
                 case 1:
                     FazerPedido();
                     break;
                 case 2:
-                    ListarPedidos("Pedidos realizados:");
+                    ListarPedidosFornecedor("Pedidos realizados:");
                     break;
                 case 3:
                     ListarRemediosComBaixoEstoque();
@@ -45,19 +61,18 @@ namespace Gerenciador_de_Medicamentos.ModuloPedidoFornecedor
                     Environment.Exit(0);
                     break;
                 default:
-                    Console.WriteLine("Opção inválida");
+                    statusOpcao = true;
                     break;
             }
-            MenuPedidoFornecedor();
+            MenuPedidoFornecedor(statusOpcao);
         }
         public void FazerPedido()
         {
-            Console.Clear();
             PedidoFornecedor novoPedido = new PedidoFornecedor();
-            ListaFornecedores("Selecione um do(s) fornecedore(s) cadastrado(s) no sistema:");
+            ListarFornecedores("Selecione um do(s) fornecedore(s) cadastrado(s) no sistema:", repositorioFornecedor.ObterTodos().Cast<Fornecedor>().ToList());
             Console.WriteLine("Digite o ID do fornecedor:");
             int idFornecedor = int.Parse(Console.ReadLine());
-            ListarRemedios("Selecione um do(s) remédio(s) cadastrado(s) no sistema:");
+            ListarRemedios("Selecione um do(s) remédio(s) cadastrado(s) no sistema:", repositorioRemedio.ObterTodos().Cast<Remedio>().ToList());
             Console.WriteLine("Digite o ID do remédio:");
             int idRemedio = int.Parse(Console.ReadLine());
             Console.WriteLine("Digite a quantidade do remédio:");
@@ -66,73 +81,12 @@ namespace Gerenciador_de_Medicamentos.ModuloPedidoFornecedor
             novoPedido.idFornecedor = idFornecedor;
             novoPedido.idRemedio = idRemedio;
             novoPedido.quantidade = quantidade;
-            novoPedido.data = DateTime.Now;
-
+            novoPedido.dataPedido = DateTime.Now;
 
             repositorioPedidoFornecedor.Inserir(novoPedido);
             repositorioRemedio.AtualizarQuantidade(idRemedio, quantidade);
             Console.WriteLine("Pedido realizado com sucesso!");
             MenuPedidoFornecedor();
-        }
-        public void ListarRemediosComBaixoEstoque()
-        {
-            Console.Clear();
-            Console.WriteLine("Remédios com estoque abaixo de 5 unidades:");
-            List<Remedio> remedios = repositorioRemedio.ObterTodos();
-            foreach (Remedio remedio in remedios)
-            {
-                if (remedio.quantidade < 5)
-                {
-                    Fornecedor fornecedor = repositorioFornecedor.Obter(remedio.idFornecedor);
-                    Console.WriteLine("Nome: " + remedio.nome);
-                    Console.WriteLine("Descrição: " + remedio.descricao);
-                    Console.WriteLine("Fornecedor: " + fornecedor.nome);
-                    Console.WriteLine("Quantidade: " + remedio.quantidade);
-                    Console.WriteLine("==================================");
-                }
-            }
-        }
-        public void ListarPedidos(string mensagem = "")
-        {
-            Console.WriteLine(mensagem);
-            List<PedidoFornecedor> pedidos = repositorioPedidoFornecedor.ObterTodos();
-            foreach (PedidoFornecedor pedido in pedidos)
-            {
-                Remedio remedio = repositorioRemedio.Obter(pedido.idRemedio);
-                Fornecedor fornecedor = repositorioFornecedor.Obter(pedido.idFornecedor);
-                Console.WriteLine("ID: " + pedido.id);
-                Console.WriteLine("Nome do Remédio: " + remedio.nome);
-                Console.WriteLine("Nome do Fornecedor: " + fornecedor.nome);
-                Console.WriteLine("Quantidade: " + pedido.quantidade);
-                Console.WriteLine("Data: " + pedido.data);
-                Console.WriteLine("==================================");
-            }
-        }
-        public void ListarRemedios(string mensagem = "")
-        {
-            Console.WriteLine(mensagem);
-            List<Remedio> remedios = repositorioRemedio.ObterTodos();
-            foreach (Remedio remedio in remedios)
-            {
-                Console.WriteLine("Nome: " + remedio.nome);
-                Console.WriteLine("Descrição: " + remedio.descricao);
-                Console.WriteLine("Quantidade: " + remedio.quantidade);
-                Console.WriteLine();
-            }
-        }
-        public void ListaFornecedores(string mensagem = "")
-        {
-            Console.WriteLine(mensagem);
-            List<Fornecedor> listaFornecedores = repositorioFornecedor.ObterTodos();
-            foreach (var fornecedor in listaFornecedores)
-            {
-                Console.WriteLine("ID: " + fornecedor.id);
-                Console.WriteLine("Nome: " + fornecedor.nome);
-                Console.WriteLine("CNPJ: " + fornecedor.cnpj);
-                Console.WriteLine("Telefone: " + fornecedor.telefone);
-                Console.WriteLine("Email: " + fornecedor.email);
-                Console.WriteLine("==================================");
-            }
         }
     }
 }
